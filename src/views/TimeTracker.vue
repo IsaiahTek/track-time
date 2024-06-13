@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { listen} from '@tauri-apps/api/event';
-import { computed, onBeforeMount, onMounted, ref, watch } from "vue";
+import { listen } from '@tauri-apps/api/event';
+import { computed, onMounted, ref, watch } from "vue";
 import TimeView from '@/components/TimeView.vue';
 import { Duration } from '@/models/duration';
 const duration = ref<Duration>();
@@ -8,11 +8,14 @@ const isTimeUp = ref<boolean>(false);
 const isTiming = ref<boolean>(false);
 const intervalId = ref<undefined|number>(undefined);
 
-const audioFile = ref<HTMLElement|undefined>(undefined)
+const audioFile = ref<HTMLAudioElement|undefined>(undefined)
 
 onMounted(()=>{
-  audioFile.value = document.getElementById('audio')??undefined
+  audioFile.value = document.getElementById('audio') as HTMLAudioElement
 });
+// onBeforeUpdate(()=>{
+//   audioFile.value?.play().then(()=>audioFile.value?.pause());
+// })
 
 listen('duration', (event)=>{
   // Cancel initial tracking
@@ -50,12 +53,17 @@ const pauseTracking = ()=>{
 const isZeroOrNull = (val:number|undefined) => !((typeof val === 'number') && val > 0)
 
 const isEmptyDuration = computed(()=>isZeroOrNull(duration.value?.seconds) && isZeroOrNull(duration.value?.minutes) && isZeroOrNull(duration.value?.hours) && isZeroOrNull(duration.value?.milliseconds))
+
 watch(()=>duration.value?.isTimeUp, (newTimeUp, oldTimeUp)=>{
-  console.log(duration.value?.millisecondsLeft)
   if(newTimeUp != oldTimeUp){
     isTimeUp.value = duration.value?.isTimeUp!;
-    console.log(audioFile.value)
-    audioFile.value?.click()
+    if(isTimeUp.value){
+      console.log("Playing")
+      audioFile.value?.play();
+    }else{
+      audioFile.value?.pause();
+      audioFile.value!.currentTime! = 0;
+    }
   }
 });
 
@@ -67,7 +75,9 @@ watch(()=>duration.value?.isTimeUp, (newTimeUp, oldTimeUp)=>{
     <div class="controls">
       <p class="label"><button v-if="!isEmptyDuration" @click="()=>isTiming ?pauseTracking(): startTracking()">{{ isTiming? 'Pause': 'Resume' }}</button></p>
     </div>
-    <audio id="audio" :autoplay="isTimeUp" src="/audios/Tchaikovsky-Waltz-op39-no8.mp3"></audio>
+    <audio id="audio" controls>
+      <source src="/audios/Tchaikovsky-Waltz-op39-no8.mp3" type="audio/mpeg">
+    </audio>
     </div>
   </template>
 
