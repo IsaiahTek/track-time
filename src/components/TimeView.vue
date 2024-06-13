@@ -23,7 +23,7 @@ export default {
             <span>sec</span>
             {{ Math.floor(duration?.seconds) }}
         </div>
-        <div class="time-cell counter"><span class="milliseconds">{{ Math.floor(duration?.milliseconds) }}</span></div>
+        <div class="time-cell counter"><span class="milliseconds">{{ Math.floor(duration?.milliseconds).toString().substring(0,1) }}</span></div>
     </div>
 </template>
 

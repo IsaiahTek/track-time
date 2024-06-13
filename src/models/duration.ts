@@ -29,9 +29,9 @@ export class Duration implements Duration{
         if(this.totalMilliseconds){
             tickID = setInterval(()=>{
                 if(this.totalMilliseconds){
-                    this.totalMilliseconds = this.totalMilliseconds - 12;
+                    this.totalMilliseconds = this.totalMilliseconds - 100;
                 }
-            }, 12)
+            }, 100)
         }
         this._tickID = tickID;
         return tickID;

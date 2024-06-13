@@ -39,7 +39,7 @@
         "signingIdentity": null
       },
       "resources": [],
-      "shortDescription": "Keep track of time with a tiny floating window",
+      "shortDescription": "Keep track of time with a tiny floating window.",
       "targets": "all",
       "windows": {
         "certificateThumbprint": null,
