@@ -11,6 +11,14 @@ export default {
 </script>
 <template>
     <div class="f-row">
+        <div v-if="duration.weeks" class="time-cell">
+            <span>wks</span>
+            {{ Math.floor(duration?.weeks) }}
+        </div>
+        <div v-if="duration.days" class="time-cell">
+            <span>days</span>
+            {{ Math.floor(duration?.days) }}
+        </div>
         <div class="time-cell">
             <span>hr</span>
             {{ Math.floor(duration?.hours) }}
@@ -23,7 +31,7 @@ export default {
             <span>sec</span>
             {{ Math.floor(duration?.seconds) }}
         </div>
-        <div class="time-cell counter"><span class="milliseconds">{{ Math.floor(duration?.milliseconds).toString().substring(0,1) }}</span></div>
+        <div class="time-cell counter"><span class="milliseconds">{{ Math.floor(duration?.milliseconds??0).toString().substring(0,1) }}</span></div>
     </div>
 </template>
 
@@ -52,9 +60,11 @@ div.time-cell span.milliseconds{
     top: unset;
     margin-bottom: unset;
 }
-div.counter{
+div.f-row div.counter{
     box-shadow: 0px 1px 5px gray;
     margin-left: 10px;
+    width: 30px !important;
+    height: 30px !important;
 }
 div.f-row div.time-cell{
     box-shadow: 0px 1px 5px gray;

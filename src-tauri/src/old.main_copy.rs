@@ -1,7 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use tauri::{Manager, PhysicalPosition, Position, WebviewWindowBuilder, WebviewUrl, WindowEvent, WebviewWindow, Emitter};
+use tauri::{Manager, PhysicalPosition, Position, WindowBuilder, WindowUrl, WindowEvent, Window};
 
 // the payload type must implement `Serialize` and `Clone`.
 #[derive(Clone, serde::Serialize)]
@@ -13,11 +13,11 @@ fn main() {
   tauri::Builder::default()
   .setup(|app| {
     // Retrieve or create the floating window
-    if app.get_webview_window("floating").is_none() {
-      let floating_window = WebviewWindowBuilder::new(
+    if app.get_window("floating").is_none() {
+      let floating_window = WindowBuilder::new(
         app,
         "floating",
-        WebviewUrl::App("/about".into())  // Ensure this route matches your frontend route
+        WindowUrl::App("/about".into())  // Ensure this route matches your frontend route
       )
       .title("Floating Window")
       .always_on_top(true)
@@ -59,11 +59,11 @@ fn main() {
 
 #[tauri::command]
 fn show_floating_window(app_handle: tauri::AppHandle, duration:String) {
-  if let Some(window) = app_handle.get_webview_window("floating") {
+  if let Some(window) = app_handle.get_window("floating") {
     // Pass the duration to the floating window using custom attributes
     // window.set_attribute("duration", duration.to_string()).expect("Failed to set duration attribute for floating window");
     // emit the `forward-duration-to-floating-window` event to all webview windows on the frontend
-    let floating_window = app_handle.get_webview_window("floating").unwrap();
+    let floating_window = app_handle.get_window("floating").unwrap();
     floating_window.emit("duration", Payload { duration: duration.into() }).unwrap();
     window.show().expect("Failed to show floating window");
     window.set_focus().expect("Failed to set focus to floating window");
@@ -72,7 +72,7 @@ fn show_floating_window(app_handle: tauri::AppHandle, duration:String) {
 }
 
 #[tauri::command]
-fn duration(window: WebviewWindow) {
+fn duration(window: Window) {
   std::thread::spawn(move || {
     loop {
       window.emit("duration", Payload { duration: "".into() }).unwrap();

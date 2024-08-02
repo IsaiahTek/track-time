@@ -2,10 +2,17 @@
 import { RouterLink, RouterView } from 'vue-router'
 </script>
 
-<template>
+<template>  
   <RouterView />
 </template>
 
-<style scoped>
-
+<style>
+input{
+  width: 60px;
+  height: 30px;
+  text-align: center;
+}
+button{
+  cursor: pointer;
+}
 </style>

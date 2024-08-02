@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { listen } from '@tauri-apps/api/event';
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import TimeView from '@/components/TimeView.vue';
 import { Duration } from '@/models/duration';
 const duration = ref<Duration>();
@@ -13,9 +13,6 @@ const audioFile = ref<HTMLAudioElement|undefined>(undefined)
 onMounted(()=>{
   audioFile.value = document.getElementById('audio') as HTMLAudioElement
 });
-// onBeforeUpdate(()=>{
-//   audioFile.value?.play().then(()=>audioFile.value?.pause());
-// })
 
 listen('duration', (event)=>{
   // Cancel initial tracking
@@ -31,6 +28,12 @@ listen('duration', (event)=>{
   // Start tracking/counting
   startTracking();
 })
+// const unlisten = await listen<string>('error', (event) => {
+//   console.log(`Got error, payload: ${event.payload}`);
+// });
+
+// you need to call unlisten if your handler goes out of scope e.g. the component is unmounted
+// unlisten();
 
 const startTracking = () =>{
   duration.value?.tickTime()
@@ -57,13 +60,13 @@ const isEmptyDuration = computed(()=>isZeroOrNull(duration.value?.seconds) && is
 watch(()=>duration.value?.isTimeUp, (newTimeUp, oldTimeUp)=>{
   if(newTimeUp != oldTimeUp){
     isTimeUp.value = duration.value?.isTimeUp!;
-    if(isTimeUp.value){
-      console.log("Playing")
-      audioFile.value?.play();
-    }else{
-      audioFile.value?.pause();
-      audioFile.value!.currentTime! = 0;
-    }
+    // if(isTimeUp.value){
+    //   console.log("Playing")
+    //   audioFile.value?.play();
+    // }else{
+    //   audioFile.value?.pause();
+    //   audioFile.value!.currentTime! = 0;
+    // }
   }
 });
 
@@ -73,15 +76,21 @@ watch(()=>duration.value?.isTimeUp, (newTimeUp, oldTimeUp)=>{
   <div class="timer" :class="isTimeUp?'time-up-blink':'timer'">
     <TimeView v-if="duration != undefined" :duration="duration"></TimeView>
     <div class="controls">
-      <p class="label"><button v-if="!isEmptyDuration" @click="()=>isTiming ?pauseTracking(): startTracking()">{{ isTiming? 'Pause': 'Resume' }}</button></p>
+      <img class="button" v-if="!isEmptyDuration" @click="()=>isTiming ?pauseTracking(): startTracking()" :src="isTiming? 'pause_circle_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.png': 'play_circle_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.png'" />
     </div>
-    <audio id="audio" controls>
+    <!-- <audio id="audio" controls>
       <source src="/audios/Tchaikovsky-Waltz-op39-no8.mp3" type="audio/mpeg">
-    </audio>
+    </audio> -->
     </div>
   </template>
 
 <style>
+img.button{
+  width: 32px;
+}
+img.button:hover{
+  cursor: pointer;
+}
 .timer{
   padding: 10px;
   height: 100vh;
