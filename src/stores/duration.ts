@@ -3,12 +3,14 @@ import { defineStore } from 'pinia'
 
 type DurationState = {duration: number}
 export const useDurationStore = defineStore('duration', {
-  state:():DurationState=>({
-    duration:0
-  }),
+  state:():DurationState[]=>([]),
   actions:{
-    setDuration(newDuration:number) {
-      this.duration = newDuration;
+    add(newDuration:number) {
+      this.$state.push({duration: newDuration});
+    },
+    remove(durationState:DurationState){
+      console.log(`Removing ${durationState.duration}`);
+      this.$state = this.filter((a)=> a.duration == durationState.duration)
     }
   }
 })

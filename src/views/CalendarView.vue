@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { computed } from '@vue/reactivity';
-import { onActivated, onBeforeMount, onMounted, onUpdated, ref, watch } from 'vue';
-import { onBeforeRouteUpdate } from 'vue-router';
+import { onUpdated, ref, watch } from 'vue';
 const days = ref<number>(0);
 
 const currentDate = ref(new Date())
@@ -60,6 +58,10 @@ function getPastDate(startDate:number, days:number) {
     return date;
 }
 
+function getWeekDay(year:number, month:number, date:number){
+  return new Date(`${date} ${monthsName[month]} ${year}`).getDay();
+}
+
 function calculateDaysDifference(date1:number | string | Date, date2:number | string | Date) {
     // Convert dates to milliseconds
     const date1Ms = new Date(date1).getTime();
@@ -73,7 +75,7 @@ function calculateDaysDifference(date1:number | string | Date, date2:number | st
 
     return differenceDays;
 }
-
+  
 // Function to get the last day of a given month and year
 function getLastDayOfMonth(year:number, month:number) {
     // Create a date for the first day of the next month
@@ -88,9 +90,6 @@ function getLastDayOfMonth(year:number, month:number) {
     return date;
 }
 
-function getWeekDay(year:number, month:number, date:number){
-  return new Date(`${date} ${monthsName[month]} ${year}`).getDay();
-}
 
 function getWeekDayName(day:number){
   return daysName[day?day-1:daysName.length-1]
@@ -122,7 +121,7 @@ function isNotEndOfView(day:number){
   return getDayIndex(day) != indexOfLastDayName
 }
 
-function isPositionInMonthOfYear(row:number, day:number, vYear:number = year.value, vMonth:number = monthIndex.value){
+function isPositionInMonthOfYear(row:number, day:number){
   const position = positionIndexOf(row, day);
   const constraint = views()
   return isNotEndOfView(constraint.lastDayOfPreviousMonth.getDay()) 
@@ -231,10 +230,10 @@ watch(hasFoundCalendarView, (e)=>{
           <span @click="incrementMonth" class="control"><img width="100%" src="../components/chevron_right_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.png" /></span>
         </div>
         <div class="header">
-          <span class="cell" v-for="dayName in daysName">{{ dayName }}</span>
+          <span class="cell" v-for="dayName in daysName" :key="dayName">{{ dayName }}</span>
         </div>
-        <div class="week-row" v-for="row in 6">
-          <span @click="setFocusedCell(row, day)" class="cell date" :class="[
+        <div class="week-row" v-for="row in 6" :key="row">
+          <span :key="day" @click="setFocusedCell(row, day)" class="cell date" :class="[
               isPositionToday(row, day)?'today':null,
               isPositionInMonthOfYear(row, day)?null:'blur-cell',
               isFocused(row, day)?'focused':null

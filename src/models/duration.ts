@@ -44,7 +44,7 @@ export class Duration implements Duration{
     }
 
     now(){
-        let newDuration = Duration.toDuration(this.totalMilliseconds)
+        const newDuration = Duration.toDuration(this.totalMilliseconds)
         this.weeks = newDuration.weeks;
         this.days = newDuration.days;
         this.hours = newDuration.hours;
@@ -77,7 +77,7 @@ export class Duration implements Duration{
     }
 
     toMilliseconds():number{
-        let totalMilliseconds = this.weeksToMilliseconds() + this.daysToMilliseconds() + this.hoursToMilliseconds() + this.minutesToMilliseconds() + this.secondsToMilliseconds() + this.milliseconds;
+        const totalMilliseconds = this.weeksToMilliseconds() + this.daysToMilliseconds() + this.hoursToMilliseconds() + this.minutesToMilliseconds() + this.secondsToMilliseconds() + this.milliseconds;
         return totalMilliseconds;
     }
 
@@ -86,20 +86,20 @@ export class Duration implements Duration{
     }
 
     static toDuration(milliseconds:number):Duration{
-        let weeks = Math.floor(milliseconds / (7 * 24 * 60 * 60 * 1000));
-        let weeksMillisecondsRemainder = milliseconds % (7 * 24 * 60 * 60 * 1000)
+        const weeks = Math.floor(milliseconds / (7 * 24 * 60 * 60 * 1000));
+        const weeksMillisecondsRemainder = milliseconds % (7 * 24 * 60 * 60 * 1000)
 
-        let days = Math.floor(weeksMillisecondsRemainder / (24 * 60 * 60 * 1000));
-        let daysMillisecondsRemainder = weeksMillisecondsRemainder % (24 * 60 * 60 * 1000);
+        const days = Math.floor(weeksMillisecondsRemainder / (24 * 60 * 60 * 1000));
+        const daysMillisecondsRemainder = weeksMillisecondsRemainder % (24 * 60 * 60 * 1000);
         
-        let hours = Math.floor(daysMillisecondsRemainder / (60 * 60 * 1000));
-        let hoursMillisecondsRemainder = daysMillisecondsRemainder % (60 * 60 * 1000)
+        const hours = Math.floor(daysMillisecondsRemainder / (60 * 60 * 1000));
+        const hoursMillisecondsRemainder = daysMillisecondsRemainder % (60 * 60 * 1000)
 
-        let minutes = Math.floor(hoursMillisecondsRemainder / (60 * 1000));
-        let minutesMillisecondsRemainder = hoursMillisecondsRemainder % (60 * 1000);
+        const minutes = Math.floor(hoursMillisecondsRemainder / (60 * 1000));
+        const minutesMillisecondsRemainder = hoursMillisecondsRemainder % (60 * 1000);
 
-        let seconds = Math.floor(minutesMillisecondsRemainder / (1000));
-        let secondssMillisecondsRemainder = minutesMillisecondsRemainder % (1000);
+        const seconds = Math.floor(minutesMillisecondsRemainder / (1000));
+        const secondssMillisecondsRemainder = minutesMillisecondsRemainder % (1000);
         
         return new Duration({weeks:weeks, days: days, hours: hours, minutes: minutes, seconds:seconds, milliseconds: secondssMillisecondsRemainder})
     }

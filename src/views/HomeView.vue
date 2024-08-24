@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { invoke } from "@tauri-apps/api/core";
-import {useDurationStore} from "../stores/duration"
-import Calendar from './Calendar.vue';
+import Calendar from './CalendarView.vue';
 import { ref } from "vue";
 const duration = ref<Duration>({hours:0, minutes:0, seconds:0});
 function openFloatingWindow(){
@@ -23,7 +22,7 @@ const currentTab = ref<number>(0);
     <header>
       <div class="wrapper">
         <nav>
-          <div @click="()=>{currentTab = index}" v-for="(tab, index) in tabs" class="link" :class="currentTab==index?'active':null">
+          <div :key="`${tab}-${index}`" @click="()=>{currentTab = index}" v-for="(tab, index) in tabs" class="link" :class="currentTab==index?'active':null">
             <span>{{toSentenceCase(tab)}}</span>
           </div>
         </nav>
