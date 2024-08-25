@@ -9,3 +9,13 @@ interface Duration{
     toMilliseconds?():number,
     // getMillisecondsFraction():number
 };
+
+interface Note{
+    id: String,
+    title: String,
+    details: String,
+    date: number,
+}
+type Notes = Note[]
+
+type DurationState = {duration: number}

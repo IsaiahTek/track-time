@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterView } from 'vue-router'
 </script>
 
 <template>  
@@ -14,5 +14,11 @@ input{
 }
 button{
   cursor: pointer;
+}
+button.disabled{
+  cursor: not-allowed;
+}
+body{
+  background-color: rgb(250, 250, 250);
 }
 </style>

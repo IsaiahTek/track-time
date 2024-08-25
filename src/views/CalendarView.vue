@@ -1,6 +1,11 @@
 <script setup lang="ts">
+import AddNote from '@/components/AddNote.vue';
+import ViewNotes from '@/components/ViewNotes.vue';
+import { useNoteStore } from '@/stores/note';
 import { onUpdated, ref, watch } from 'vue';
 const days = ref<number>(0);
+
+// const noteStore = ref(useNoteStore())
 
 const currentDate = ref(new Date())
 const monthIndex = ref<number>(currentDate.value.getMonth())
@@ -86,7 +91,6 @@ function getLastDayOfMonth(year:number, month:number) {
     
     // Subtract one day to get the last day of the given month
     date.setDate(date.getDate() - 1);
-    // console.log(date)
     return date;
 }
 
@@ -179,11 +183,11 @@ function setFocusedCell(row:number, day:number){
   }else if(date.getMonth() > monthIndex.value){
     incrementMonth();
   }
-  focusedDate.value?.getMonth() == date.getMonth() && focusedDate.value?.getDate() == date.getDate() && focusedDate.value.getFullYear() == date.getFullYear()
-    ? (
-      focusedDate.value = null)
-    : (
-      focusedDate.value = date);
+  if(focusedDate.value?.getMonth() == date.getMonth() && focusedDate.value?.getDate() == date.getDate() && focusedDate.value.getFullYear() == date.getFullYear()){
+      focusedDate.value = null
+    }else{
+      focusedDate.value = date;
+    }
 }
 const targetElement = ref<HTMLElement|null>(document.getElementById('calendarView'))
 onUpdated(()=>{
@@ -243,8 +247,11 @@ watch(hasFoundCalendarView, (e)=>{
     </div>
     <div class="tabs">
       <div class="note mb-3">
-        <p>Note</p>
-        <p v-if="focusedDate">No note on {{ new Date(focusedDate) }} wuau au eu a ue aji c ujau e aud ja eu akdu a leyu ladu</p>
+        <div v-if="focusedDate">
+          <ViewNotes :date="focusedDate.getTime()" ></ViewNotes>
+          
+          <AddNote :date="focusedDate.getTime()" />
+        </div>
       </div>
       <div class="compute">
         <h2>Date of Days From Today</h2>
@@ -302,7 +309,7 @@ span.control:hover{
   color: gray;
 }
 .focused{
-  border: solid 1px gray;
+  border: solid 1.5px rgb(221, 221, 221);
 }
 .date{
   cursor: pointer;
@@ -328,5 +335,14 @@ h2{margin-top: -10px;}
 }
 .mb-3{
   margin-bottom: 30px;
+}
+.f-w{
+  width: 100%;
+  text-align: left;
+  padding-inline: 10px;
+  height: 40px;
+}
+.tabs{
+  width:55%
 }
 </style>
