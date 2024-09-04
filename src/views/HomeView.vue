@@ -1,19 +1,16 @@
 <script setup lang="ts">
-import { invoke } from "@tauri-apps/api/core";
-import Calendar from './CalendarView.vue';
 import { ref } from "vue";
-const duration = ref<Duration>({hours:0, minutes:0, seconds:0});
-function openFloatingWindow(){
-  let durationToString = JSON.stringify(duration.value);
-  invoke('show_floating_window', {duration:durationToString}).catch(err => console.error("Failed to invoke show_floating_window:", err));
-}
+import Calendar from './CalendarView.vue';
+import SettingsView from "./SettingsView.vue";
+import TimerSetup from "./TimerSetup.vue";
+import { useSettingsStore } from "@/stores/settings";
 
 function toSentenceCase(text:String){
   return text.split('').map((val, index)=>(index==0)?val.toUpperCase():val).join('');
 }
-
-const tabs = ['alarm', 'calendar'];
-const currentTab = ref<number>(0);
+type Page = 'alarm' | 'calendar' | 'settings';
+const tabs:Page[] = ['alarm', 'calendar', 'settings'];
+const currentTab = ref<Page>('alarm');
 
 </script>
 
@@ -22,34 +19,24 @@ const currentTab = ref<number>(0);
     <header>
       <div class="wrapper">
         <nav>
-          <div :key="`${tab}-${index}`" @click="()=>{currentTab = index}" v-for="(tab, index) in tabs" class="link" :class="currentTab==index?'active':null">
+          <div class="m-b-5">
+            <button @click="useSettingsStore().toggleUseDefaultTheme">{{ useSettingsStore().themeName }}</button>
+          </div>
+          <div :key="`${tab}-${index}`" @click="()=>{currentTab = tab}" v-for="(tab, index) in tabs" class="link" :class="currentTab==tab?'active':null">
             <span>{{toSentenceCase(tab)}}</span>
           </div>
         </nav>
       </div>
     </header>
     <main>
-      <section v-if="currentTab==0" class="main-body">
-        <div><h1>Set Alarm</h1></div>
-        <div class="duration-box">
-          <div class="input-controller">
-            <label for="hour">Hr</label>
-            <input name="hour" v-model="duration.hours" placeholder="hr" type="number" max="24" min="0" />
-          </div>
-          <div class="input-controller">
-            <label for="minutes">Min</label>
-            <input name="minutes" v-model="duration.minutes" placeholder="min" type="number" max="59" min="0" />
-          </div>
-    
-          <div class="input-controller">
-            <label for="seconds">Sec</label>
-            <input name="seconds" v-model="duration.seconds" placeholder="sec" type="number" max="59" min="0" />
-          </div>
-        </div>
-        <button @click="openFloatingWindow">Start</button>
+      <section v-if="currentTab=='alarm'" class="main-body">
+        <TimerSetup />
       </section>
-      <section v-if="currentTab==1" class="main-body">
+      <section v-if="currentTab=='calendar'" class="main-body">
         <Calendar />
+      </section>
+      <section v-if="currentTab=='settings'" class="main-body">
+        <SettingsView />
       </section>
     </main>
   </section>
@@ -63,7 +50,7 @@ section.flex{
   flex-wrap: wrap;
 }
 header{
-  background-color: rgb(228, 222, 187);
+  background-color: color-mix(in srgb, var(--background-color) 90%, black 10%);
   width: 20%;
   /* z-index: 0; */
 }
@@ -75,7 +62,7 @@ header nav{
 }
 nav div.link{
   padding: 10px 30px;
-  background-color: white;
+  background-color: color-mix(in srgb, var(--background-color) 75%, black 25%);
   margin-bottom: 10px;
   margin-right: 20px;
 }
@@ -84,7 +71,7 @@ nav div.link.active{
 }
 nav div.link:hover{
   cursor: pointer;
-  box-shadow: rgb(235, 235, 235) -5px 1px 5px;
+  box-shadow:  rgb(235, 235, 235) -5px 1px 5px;
 }
 main{
   /* overflow-wrap: break-word;
@@ -99,20 +86,8 @@ main .main-body{
 }
 button{
   padding: 8px 15px;
-  background-color: rgb(0, 128, 255);
   border: none;
   border-radius: 5px;
-  color: aliceblue;
 }
 
-div.duration-box{
-  display: flex;
-  flex-direction: row;
-  margin-bottom: 10px;
-}
-div.input-controller{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
 </style>

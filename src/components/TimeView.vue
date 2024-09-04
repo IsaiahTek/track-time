@@ -21,15 +21,15 @@ export default {
         </div>
         <div class="time-cell">
             <span>hr</span>
-            {{ Math.floor(duration?.hours) }}
+            {{ Math.floor(duration?.hours??0) }}
         </div>
         <div class="time-cell">
             <span>min</span>
-            {{ Math.floor(duration?.minutes) }}
+            {{ Math.floor(duration?.minutes||0) }}
         </div>
         <div class="time-cell">
             <span>sec</span>
-            {{ Math.floor(duration?.seconds) }}
+            {{ Math.floor(duration?.seconds||0) }}
         </div>
         <div class="time-cell counter"><span class="milliseconds">{{ Math.floor(duration?.milliseconds??0).toString().substring(0,1) }}</span></div>
     </div>

@@ -17,7 +17,7 @@ fn main() {
       let floating_window = WebviewWindowBuilder::new(
         app,
         "floating",
-        WebviewUrl::App("/about".into())  // Ensure this route matches your frontend route
+        WebviewUrl::App("/countdown".into())  // Ensure this route matches your frontend route
       )
       .title("Floating Window")
       .always_on_top(true)
@@ -63,11 +63,13 @@ fn show_floating_window(app_handle: tauri::AppHandle, duration:String) {
     // Pass the duration to the floating window using custom attributes
     // window.set_attribute("duration", duration.to_string()).expect("Failed to set duration attribute for floating window");
     // emit the `forward-duration-to-floating-window` event to all webview windows on the frontend
+    eprintln!("Success executing the command showFloatingWindow");
     let floating_window = app_handle.get_webview_window("floating").unwrap();
     floating_window.emit("duration", Payload { duration: duration.into() }).unwrap();
     window.show().expect("Failed to show floating window");
     window.set_focus().expect("Failed to set focus to floating window");
   } else {
+    print!("Error executing the command showFloatingWindow");
   }
 }
 

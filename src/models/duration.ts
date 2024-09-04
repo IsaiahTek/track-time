@@ -81,8 +81,12 @@ export class Duration implements Duration{
         return totalMilliseconds;
     }
 
-    static toSeconds(milliseconds:number):number{
-        return Math.floor(milliseconds/(1000));
+    public get inSeconds():number{
+        return Math.floor(this.toMilliseconds()/(1000));
+    }
+
+    public get inMinutes():number{
+        return this.inSeconds/60;
     }
 
     static toDuration(milliseconds:number):Duration{
@@ -103,6 +107,8 @@ export class Duration implements Duration{
         
         return new Duration({weeks:weeks, days: days, hours: hours, minutes: minutes, seconds:seconds, milliseconds: secondssMillisecondsRemainder})
     }
+
+    
 
     constructor(duration:{weeks?:number, days?:number, hours?:number, minutes?:number, seconds?:number, milliseconds?:number}){
         this.weeks = duration.weeks??0;

@@ -4,7 +4,8 @@ import { defineStore } from "pinia";
 const noteDb = new NoteDb();
 type NoteStoreType = {
     notes: Notes,
-    totalPagesFetched: number
+    totalPagesFetched: number,
+    xE: number
 }
 const nextPageToFetch = (currentPage:number, totalNotes: number):number=>{
     return totalNotes != 0 && (totalNotes % 50 == 0)
@@ -16,17 +17,28 @@ const nextPageToFetch = (currentPage:number, totalNotes: number):number=>{
 export const useNoteStore = defineStore('note', {
     state: (): NoteStoreType => ({
         notes: [],
-        totalPagesFetched: 0
+        totalPagesFetched: 0,
+        xE: 0
     }),
     actions:{
-        add(note:Note){
+        add(note:NoteAddType){
             noteDb.add(note);
         },
         update(note:Note){
-            noteDb.update(note);
+            noteDb.update(note).then((a)=>{
+                console.log(a)
+                this.notes = this.notes.map((_note)=>{
+                    if(_note.id == note.id){
+                        return note;
+                    }else{
+                        return _note;
+                    }
+                })
+            });
         },
         delete(id:number){
             noteDb.delete(id);
+            this.notes = this.notes.filter((note)=> note.id != id)
         },
         async getNoteByDate(date:number):Promise<Note[]>{
             const note = this.notes.filter((note)=>note.date == date);
@@ -37,20 +49,20 @@ export const useNoteStore = defineStore('note', {
                 const fetchedNote = await noteDb.fetch(nextPage, 50);
                 if(fetchedNote != undefined){
                     
-                    console.log("LENGTH ", this.notes.length);
-
-                    (fetchedNote as Note[]).forEach((note, index)=>{
+                    (fetchedNote as Note[]).forEach((note)=>{
                         if(!this.notes.some((eN)=>(
                             eN.id == note.id
                         ))){
                             this.notes.push(note)
                         }
                     });
-                    console.log("LENGTH ", this.notes.length)
                     this.totalPagesFetched = nextPage;
                 }
                 return this.notes.filter((note)=>note.date == date);
             }
+        },
+        updateXE(value:number){
+            this.xE = value;
         }
     }
 });

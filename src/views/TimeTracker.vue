@@ -1,16 +1,24 @@
 <script setup lang="ts">
 import { listen } from '@tauri-apps/api/event';
-import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import TimeView from '@/components/TimeView.vue';
 import { Duration } from '@/models/duration';
+import { useRoute } from 'vue-router';
 const duration = ref<Duration>();
 const isTimeUp = ref<boolean>(false);
 const isTiming = ref<boolean>(false);
 const intervalId = ref<undefined|number>(undefined);
 
+
+
 const audioFile = ref<HTMLAudioElement|undefined>(undefined)
 
 onMounted(()=>{
+  if(useRoute().params.duration != null){
+    duration.value = new Duration(JSON.parse(useRoute().params.duration as string))
+    pauseTracking();
+    startTracking();
+  }
   audioFile.value = document.getElementById('audio') as HTMLAudioElement
 });
 
@@ -76,7 +84,7 @@ watch(()=>duration.value?.isTimeUp, (newTimeUp, oldTimeUp)=>{
   <div class="timer" :class="isTimeUp?'time-up-blink':'timer'">
     <TimeView v-if="duration != undefined" :duration="duration"></TimeView>
     <div class="controls">
-      <img class="button" v-if="!isEmptyDuration" @click="()=>isTiming ?pauseTracking(): startTracking()" :src="isTiming? 'pause_circle_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.png': 'play_circle_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.png'" />
+      <img class="button" v-if="!isEmptyDuration" @click="()=>isTiming ?pauseTracking(): startTracking()" :src="isTiming? '../pause_circle_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.png': '../play_circle_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.png'" />
     </div>
     <!-- <audio id="audio" controls>
       <source src="/audios/Tchaikovsky-Waltz-op39-no8.mp3" type="audio/mpeg">

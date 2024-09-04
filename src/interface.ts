@@ -1,20 +1,22 @@
 interface Duration{
     weeks?:number,
     days?:number,
-    hours:number,
-    minutes:number,
-    seconds:number,
+    hours?:number,
+    minutes?:number,
+    seconds?:number,
     milliseconds?:number,
     // millisecondsFraction:number
     toMilliseconds?():number,
     // getMillisecondsFraction():number
 };
 
-interface Note{
-    id: String,
+type NoteAddType = {
     title: String,
     details: String,
     date: number,
+}
+interface Note extends NoteAddType{
+    id: number,
 }
 type Notes = Note[]
 

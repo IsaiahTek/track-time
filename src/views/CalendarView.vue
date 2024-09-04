@@ -1,11 +1,8 @@
 <script setup lang="ts">
-import AddNote from '@/components/AddNote.vue';
+import AddNote from '@/components/AddOrEditNote.vue';
 import ViewNotes from '@/components/ViewNotes.vue';
-import { useNoteStore } from '@/stores/note';
 import { onUpdated, ref, watch } from 'vue';
 const days = ref<number>(0);
-
-// const noteStore = ref(useNoteStore())
 
 const currentDate = ref(new Date())
 const monthIndex = ref<number>(currentDate.value.getMonth())
@@ -13,6 +10,37 @@ const year = ref<number>(currentDate.value.getFullYear());
 const hours = ref(currentDate.value.getHours());
 const minutes = ref(currentDate.value.getMinutes())
 const second = ref(currentDate.value.getSeconds());
+
+type tabNamesType = 'note' | 'compute'
+type tabType = {name: tabNamesType}
+const tabs:tabType[] = [{name:'note'}, {name:'compute'}]
+
+const tab = ref<tabType>(tabs[0]);
+
+function setTab(name:tabNamesType){
+  tab.value = {name:name}
+}
+
+const isAddingNote = ref<boolean>(false)
+
+function closeAddNote(){
+  isAddingNote.value = false;
+}
+
+const generateRandomNumber = () =>{
+  return Math.random() * 10000000000;
+}
+
+const buildKey = ref<number>(generateRandomNumber())
+
+function setBuildKey(){
+  buildKey.value = generateRandomNumber();
+}
+
+function onAddNote(){
+  setBuildKey();
+  closeAddNote();
+}
 
 setInterval(()=>{
   currentDate.value = new Date();
@@ -245,24 +273,40 @@ watch(hasFoundCalendarView, (e)=>{
         </div>
       </div>
     </div>
-    <div class="tabs">
-      <div class="note mb-3">
-        <div v-if="focusedDate">
-          <ViewNotes :date="focusedDate.getTime()" ></ViewNotes>
-          
-          <AddNote :date="focusedDate.getTime()" />
+    <div class="tabs" v-if="focusedDate">
+      <div class="tools">
+        <button :class="tab.name=='note'?'active':''" @click="setTab('note')">Note</button>
+        <button :class="tab.name=='compute'?'active':''" @click="setTab('compute')">Compute</button>
+      </div>
+      <hr class="mb-3">
+      <div class="scrollable">
+        <div class="note mb-3" v-if="tab.name.toUpperCase() == 'NOTE'">
+          <div>
+            <ViewNotes :date="focusedDate.getTime()" :open-add-note="()=>{isAddingNote = true}" :build-key="buildKey" :on-add-note="onAddNote" ></ViewNotes>
+                      
+            <AddNote v-if="isAddingNote" :date="focusedDate.getTime()" :on-add-note="onAddNote" />
+            
+          </div>
+        </div>
+        <div class="compute" v-else-if="tab.name.toUpperCase() == 'COMPUTE'">
+          <h2>Date of Days From Today</h2>
+          <div>
+            <input v-model="days" type="number" name="days" id="days" placeholder="0" min="0" />
+          </div>
+          <div>
+            <p>
+              {{ getFutureDate(focusedDate, days) }}
+            </p>
+          </div>
         </div>
       </div>
-      <div class="compute">
-        <h2>Date of Days From Today</h2>
-        <div>
-          <input v-model="days" type="number" name="days" id="days" placeholder="0" min="0" />
-        </div>
-        <div>
-          <p>
-            {{ getFutureDate(currentDate, days) }}
-          </p>
-        </div>
+    </div>
+    <div class="unfocused-date-view" v-else>
+      <div>
+        <h2>No Date Picked</h2>
+      </div>
+      <div>
+        <p>Pick a date to see note or compute date</p>
       </div>
     </div>
   </div>
@@ -280,17 +324,18 @@ div.calendar div.header, div.calendar div.week-row{
 div.calendar div.controls{
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 span.control{
   display: flex;
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   border-radius: 5px;
   justify-content: center;
   align-items: center;
 }
 span.control:hover{
-  background-color: gainsboro;
+  background-color: rgb(240, 240, 240);
   cursor: pointer;
 }
 .cell{
@@ -321,14 +366,16 @@ h2{margin-top: -10px;}
 }
 .calendar{
   /* margin-right: ; */
-  background-color: rgb(249, 249, 250);
+  background-color: color-mix(in srgb, var(--background-color) 90%, white 10%);
   padding: 20px;
   border-radius: 10px;
+  transition: all ease-in-out .5s;
 }
 .calendar:hover{
-  border-radius: 2px;
-  box-shadow: gainsboro 0px 4px 2px;
+  border-radius: 5px;
+  box-shadow: color-mix(in srgb, var(--background-color) 90%, white 10%) 0px 20px 20px;
   transition: all ease-in-out .5s;
+  background-color: color-mix(in srgb, var(--background-color) 80%, white 20%);
 }
 .mr-5{
   margin-right: 50px;
@@ -345,4 +392,60 @@ h2{margin-top: -10px;}
 .tabs{
   width:55%
 }
+.add-note-wrapper{
+  display: flex;
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+}
+.add-note-backdrop{
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(44, 44, 44, 0.37);
+  /* display: flex;
+  align-items: center;
+  justify-content: center; */
+}
+.add-note-dialog{
+  width: 35%;
+  max-width: 500px;
+  padding: 30px;
+  background-color: rgb(239, 243, 245);
+  border-radius: 5px;
+  position: inherit;
+  z-index: 10;
+}
+.tools .active{
+  background-color: blue;
+  color: white;
+}
+button{
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+.tools{
+  margin-bottom: 20px;
+}
+.unfocused-date-view{
+  display: flex;
+  flex-direction: column;
+  height: 60vh;
+  width: 55%;
+  align-items: center;
+  justify-content: center;
+}
+.scrollable{
+  max-height: 70vh;
+  overflow-y: scroll;
+}
+hr{color: aliceblue;}
 </style>
