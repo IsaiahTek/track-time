@@ -3,27 +3,18 @@
 // import { Duration } from "@/models/duration";
 import { Duration as DurationModel } from "@/models/duration";
 import { invoke } from "@tauri-apps/api/core";
-import { Webview } from "@tauri-apps/api/webview";
-// import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
-import { Window } from "@tauri-apps/api/window";
+import { emitTo } from "@tauri-apps/api/event";
+import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { ref } from "vue";
 
-const allWindows = ref<{id:String, window:Window}[]>([])
+const allWindows = ref<{id:String, window:WebviewWindow}[]>([])
 
 function createWindow(id:string, duration:Duration){
   const url = `/countdown/${JSON.stringify(duration)}`
   console.log(url)
-  const window = new Window(id, {visible:true, alwaysOnTop:true, title:id, width:300, height:100});
+  const window = new WebviewWindow(id, {visible:true, alwaysOnTop:true, title:id, width:300, height:100, url:url})
   window.once('tauri://created', function () {
-    const webview = new Webview(window, id, {url:url, width:200, height:80, x:0, y:0 })
-    webview.once('tauri://webview-created', function(){
-      console.log("Webview created")
-      allWindows.value?.push({id: id+'webview', window: window});
-    });
-    webview.once('tauri://error', function(e){
-      console.log("Webview error", e)
-      allWindows.value?.push({id: id+'webview', window: window});
-    })
+    allWindows.value?.push({id: id, window: window});
   });
   window.once('tauri://error', function () {
     window.setFocus();
