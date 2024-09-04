@@ -80,34 +80,34 @@ function getFutureDate(startDate:Date, days:number) {
     
     return date;
 }
-// Function to calculate the future date
-function getPastDate(startDate:number, days:number) {
-    // Create a Date object from the start date
-    const date = new Date(startDate);
+// // Function to calculate the future date
+// function getPastDate(startDate:number, days:number) {
+//     // Create a Date object from the start date
+//     const date = new Date(startDate);
     
-    // Add the specified number of days
-    date.setDate(date.getDate() - days);
+//     // Add the specified number of days
+//     date.setDate(date.getDate() - days);
     
-    return date;
-}
+//     return date;
+// }
 
-function getWeekDay(year:number, month:number, date:number){
-  return new Date(`${date} ${monthsName[month]} ${year}`).getDay();
-}
+// function getWeekDay(year:number, month:number, date:number){
+//   return new Date(`${date} ${monthsName[month]} ${year}`).getDay();
+// }
 
-function calculateDaysDifference(date1:number | string | Date, date2:number | string | Date) {
-    // Convert dates to milliseconds
-    const date1Ms = new Date(date1).getTime();
-    const date2Ms = new Date(date2).getTime();
+// function calculateDaysDifference(date1:number | string | Date, date2:number | string | Date) {
+//     // Convert dates to milliseconds
+//     const date1Ms = new Date(date1).getTime();
+//     const date2Ms = new Date(date2).getTime();
 
-    // Calculate the difference in milliseconds
-    const differenceMs = Math.abs(date1Ms - date2Ms);
+//     // Calculate the difference in milliseconds
+//     const differenceMs = Math.abs(date1Ms - date2Ms);
 
-    // Convert milliseconds to days (1000 ms/s * 60 s/min * 60 min/h * 24 h/day)
-    const differenceDays = differenceMs / (1000 * 60 * 60 * 24);
+//     // Convert milliseconds to days (1000 ms/s * 60 s/min * 60 min/h * 24 h/day)
+//     const differenceDays = differenceMs / (1000 * 60 * 60 * 24);
 
-    return differenceDays;
-}
+//     return differenceDays;
+// }
   
 // Function to get the last day of a given month and year
 function getLastDayOfMonth(year:number, month:number) {

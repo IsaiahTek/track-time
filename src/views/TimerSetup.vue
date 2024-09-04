@@ -3,7 +3,6 @@
 // import { Duration } from "@/models/duration";
 import { Duration as DurationModel } from "@/models/duration";
 import { invoke } from "@tauri-apps/api/core";
-import { emitTo } from "@tauri-apps/api/event";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { ref } from "vue";
 
